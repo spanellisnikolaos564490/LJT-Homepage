@@ -48,5 +48,19 @@ jobs:
             echo "Template placeholder content found"
             exit 1
           fi
+      - name: Show rendered content
+        run: |
+          python3 - <<'PY'
+          import re
+          html = open('_site/publications/index.html', encoding='utf-8').read()
+          body = html.split('<div id="main"', 1)[1]
+          start = body.find('archive__item-title')
+          print(body[start - 100:start + 5000])
+          print('\n=== About page text ===')
+          about = open('_site/index.html', encoding='utf-8').read()
+          about = about.split('<div id="main"', 1)[1]
+          text = re.sub(r'<[^>]+>', ' ', about)
+          print(re.sub(r'[ \t]+', ' ', text).strip())
+          PY
       - name: List generated HTML pages
         run: find _site -name "*.html" | sort
